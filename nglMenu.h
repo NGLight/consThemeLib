@@ -126,6 +126,9 @@ int drawMenu(string butt[], int countButt, int selecPoint){
 	}
 	//ожидаем кнопку перерисовываем меню и ждем кн выхода
 	for (int key = getKeys(); key != BUTT_ENTER; key = getKeys()){
+
+        if (key == BUTT_ESC) return -1;
+
 		if (key == BUTT_UP && selecPoint >= 0){
 			if (selecPoint == 0)
 				selecPoint = countButt-1;
@@ -450,9 +453,7 @@ void redrawMenu(){
 	//showCursor(false);
 	COORD pos = {0,0};
 	setNewCursorCOORD(pos);
-	//for (int i=0; i<40; i++, cout << "                                                                     \n");
-	//for (int i=0; i<CNT_LINES_REDRAW; i++, cout << "-----------------------------------------------------------------------\n");
-	for (int i=0; i<CNT_LINES_REDRAW; i++, cout << "\t\t\t\t\r\n");
+	for (int i=0; i<CNT_LINES_REDRAW; i++, cout << "\t\t\t\t\t\r\n");
 	pos.X = 0; pos.Y = 0;
 	setNewCursorCOORD(pos);
 }
@@ -470,9 +471,9 @@ void exitMenu(){
 }
 
 
+//функция отрисовывает вокруг меню прямоугольник, не более того
 #define FOR(UPPERBOUND,VALUE) for(int I = 0; I<int(UPPERBOUND); I++, cout << char(VALUE))
 void drawFrame(int length, int height){
-	//узнаем максимальную длину пункта меню
 	COORD pos;
 	returnCursorCOORD(pos);
     /*

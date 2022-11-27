@@ -3,27 +3,29 @@
 #include "nglTables.h"
 #include "nglExp.h"
 
+#define CNT_LINES_REDRAW 10 //количество строк для отчистки для быстрого обновления экрана
+
 /*
-* РџРћР”РўР’Р•Р Р–Р”Р•РќРР• Р’Р«РҐРћР”Рђ
-* Р”РћР‘РђР’РРўР¬ РџРЈРќРљРў РљРќРћРџРљРђ-РЎРўР РћРљРђ
-* Р”РћР‘РђР’РРўР¬ Р’Р«РџРђР”РђР®Р©РР™ РЎРџРРЎРћРљ
-* Р”РћР‘РђР’РРўР¬ РЎРљР РћР›РРќР“ РњР•РќР®
-* РџР•Р Р•Р”Р•Р›РђРўР¬ РџРЈРќРљРў РљРќРћРџРљРђ-Р“РћР РР—Р РќРўРђР›Р¬РќРђРЇ
-* РџР•Р Р•Р”Р•Р›Р•РђРўР¬ РџРЈРќРљРў Р’Р’РћР”Рђ
-* РџР•Р Р•Р”Р•Р›РђРўР¬ Р“Р›РђР’РќРћР• РњР•РќР®, РќРђ Р’РҐРћР” Р¤РЈРќРљР¦РР
-* РџР•Р Р•РџРРЎРђРўР¬ РћРўР§РРЎРўРљРЈ РњР•РќР®
-* Р”РћР‘РђР’РРўР¬ Р’Р«РҐРћР” Р§Р•Р Р•Р— ESC Р’ РљРђР–Р”РћРњ РџРЈРќРљРРўР• РњР•РќР®
+* ПОДТВЕРЖДЕНИЕ ВЫХОДА
+* ДОБАВИТЬ ПУНКТ КНОПКА-СТРОКА
+* ДОБАВИТЬ ВЫПАДАЮЩИЙ СПИСОК
+* ДОБАВИТЬ СКРОЛИНГ МЕНЮ
+* ПЕРЕДЕЛАТЬ ПУНКТ КНОПКА-ГОРИЗРНТАЛЬНАЯ
+* ПЕРЕДЕЛЕАТЬ ПУНКТ ВВОДА
+* ПЕРЕДЕЛАТЬ ГЛАВНОЕ МЕНЮ, НА ВХОД ФУНКЦИИ
+* ПЕРЕПИСАТЬ ОТЧИСТКУ МЕНЮ
+* ДОБАВИТЬ ВЫХОД ЧЕРЕЗ ESC В КАЖДОМ ПУНКИТЕ МЕНЮ
 */
 
 
-//------------------- РћРЎРќРћР’РќР«Р• -------------------//
+//------------------- ОСНОВНЫЕ -------------------//
 //void drawEscButton();
-int drawButton(string butt[], int countButt, int selecButt = 0); //СЂРёСЃСѓРµРј РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅС‹Рµ РєРЅРѕРїРѕС‡РєРё
-int drawMenu(string butt[], int countButt, int selecPoint = 0); //СЂРёСЃСѓРµРј РѕР±С‹С‡РЅРѕРµ РІРµСЂС‚РёРєР°Р»СЊРЅРѕРµ РјРµРЅСЋ
-// РЎР›РћРњРђРќРћ int drawSettingsMenu(string butt[], int countButt, bool* settPointint, int selecPoint, bool onlyOneSett); //СЂРёСЃСѓРµРј РјРµРЅСЋ СЃ РІС‹Р±РѕСЂРѕРј РЅР°СЃС‚СЂРѕРµРє
-//------------------- РЎР›РЈР–Р•Р‘РќР«Р• -------------------//
-void redrawMenu(); //С„СѓРЅРєС†РёСЏ Р±С‹СЃС‚СЂРѕР№ "РїРµСЂРµСЂРёСЃРѕРІРєРё" СЌРєР°РЅР°, РЅР° СЃР°РјРѕРј РґРµР»Рµ РѕР±Р»Р°СЃС‚СЊ Р·Р°РјРµС‰Р°РµС‚СЃСЏ РїСЂРѕР±РµР»Р°РјРё, РѕРґРЅР°РєРѕ СЌС‚Рѕ СЂР°Р±РѕС‚Р°РµС‚ Р±С‹СЃС‚СЂРµРµ system(cls)
-
+int drawButton(string butt[], int countButt, int selecButt = 0); //рисуем горизонтальные кнопочки
+int drawMenu(string butt[], int countButt, int selecPoint = 0); //рисуем обычное вертикальное меню
+// СЛОМАНО int drawSettingsMenu(string butt[], int countButt, bool* settPointint, int selecPoint, bool onlyOneSett); //рисуем меню с выбором настроек
+//------------------- СЛУЖЕБНЫЕ -------------------//
+void redrawMenu(); //функция быстрой "перерисовки" экана, на самом деле область замещается пробелами, однако это работает быстрее system(cls)
+void drawFrame(int length, int height);
 //void drawEscButton(){}
 
 /*
@@ -32,18 +34,17 @@ int drawSlider(){
 }
 */
 
-///////////////////////// РњР•РќР® /////////////////////////
+///////////////////////// МЕНЮ /////////////////////////
 int drawButton(string butt[], int countButt, int selecButt){
-	//РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅРѕРµ РјРµРЅСЋ
+	//горизонтальное меню
 	setlocale (LC_ALL,"Rus");
 	showCursor(false);
 	CN;
 
-
     ///
 
-    //СѓР·РЅР°РµРј РјР°РєСЃРёРјР°Р»СЊРЅСѓСЋ РґР»РёРЅСѓ РїСѓРЅРєС‚Р° РјРµРЅСЋ
-	//С‡С‚РѕР± РІС‹РґРµР»РµРЅРµРё Р±С‹Р»Рѕ РѕРґРёРЅР°РєРѕРІС‹Рј
+    //узнаем максимальную длину пункта меню
+	//чтоб выделенеи было одинаковым
 	/*
 	int maxSymb=0;
 	for (int i=0; i < countButt; i++){
@@ -52,7 +53,7 @@ int drawButton(string butt[], int countButt, int selecButt){
 	}
 	*/
 
-	//РїРµСЂРІР°СЏ РѕС‚СЂРёСЃРѕРІРєР°
+	//первая отрисовка
 	cout << "\t|";
 	for (int i=0; i < countButt; i++, cout << "|"){
 		if (i == selecButt){
@@ -66,7 +67,7 @@ int drawButton(string butt[], int countButt, int selecButt){
             //cout << " ";
         }
 	}
-    //РїРµСЂРµСЂРёСЃРѕРІРєР° РґРѕ С‚РµС… РїРѕСЂР° РїРѕРєР° РїСѓРЅРєС‚ РЅРµ РІС‹РїРѕР»РЅРµРЅ
+    //перерисовка до тех пора пока пункт не выполнен
 	for (int key = getKeys(); key != BUTT_ENTER; key = getKeys()){
 
 		if (key == BUTT_RIGHT && selecButt < countButt-1)
@@ -96,24 +97,20 @@ int drawButton(string butt[], int countButt, int selecButt){
 }
 
 int drawMenu(string butt[], int countButt, int selecPoint){
-	//Р·Р°С†РёРєР»РµРЅРЅРѕРµ РІРµСЂС‚РёРєР°Р»СЊРЅРѕРµ РјРµРЅСЋ
-	setlocale (LC_ALL,"Rus");
+	//зацикленное вертикальное меню
 	showCursor(false);
 	COORD pos;
 	CN;
-	//redrawMenu();
-
-    //СѓР·РЅР°РµРј РјР°РєСЃРёРјР°Р»СЊРЅСѓСЋ РґР»РёРЅСѓ РїСѓРЅРєС‚Р° РјРµРЅСЋ
-	//С‡С‚РѕР± РІС‹РґРµР»РµРЅРµРё Р±С‹Р»Рѕ РѕРґРёРЅР°РєРѕРІС‹Рј
-	/*
+	redrawMenu();
+	//узнаем максимальную длину пункта меню
 	int maxSymb=0;
 	for (int i=0; i < countButt; i++){
 		if (butt[i].length() > maxSymb)
 			maxSymb = butt[i].length();
 	}
-	*/
+	drawFrame(maxSymb, countButt);
 
-	//РѕС‚СЂРёСЃРѕРІС‹РІР°РµРј РїРµСЂРІРѕРЅРѕС‡Р°Р»СЊРЅРѕРµ РјРµРЅСЋ
+	//отрисовываем первоночальное меню
 	cout << endl;
 	for (int i=0; i < countButt; i++, cout << endl){
 	    cout << "\t";
@@ -127,7 +124,7 @@ int drawMenu(string butt[], int countButt, int selecPoint){
 			//cout << " ";
 		}
 	}
-	//РѕР¶РёРґР°РµРј РєРЅРѕРїРєСѓ РїРµСЂРµСЂРёСЃРѕРІС‹РІР°РµРј РјРµРЅСЋ Рё Р¶РґРµРј РєРЅ РІС‹С…РѕРґР°
+	//ожидаем кнопку перерисовываем меню и ждем кн выхода
 	for (int key = getKeys(); key != BUTT_ENTER; key = getKeys()){
 		if (key == BUTT_UP && selecPoint >= 0){
 			if (selecPoint == 0)
@@ -146,7 +143,7 @@ int drawMenu(string butt[], int countButt, int selecPoint){
 		pos.Y -= countButt;
 		setNewCursorCOORD(pos);
 
-		//РїРµСЂРµСЂРёСЃРѕРІС‹РІР°РµРј РјРµРЅСЋ
+		//перерисовываем меню
 		for (int i=0; i < countButt; i++, cout << endl){
             cout << "\t";
 			if (i == selecPoint){
@@ -168,29 +165,27 @@ int drawMenu(string butt[], int countButt, int selecPoint){
 
 
 int drawSettingsMenu(string butt[], int countButt, bool* settPoint, int selecPoint, bool onlyOneSett){
-	//РєСЂСѓРіРѕРІРѕРµ РІРµСЂС‚РёРєР°Р»СЊРЅРѕРµ РјРµРЅСЋ
-	//reDrawMenu РѕС‚С‡РёС‰Р°РµС‚ СЌРєСЂР°РЅ
-	//РРњР•Р•Рў Р”Р’Рђ Р Р•Р–РРњРђ
-	//onlyOneSett true РўРћР›Р¬РљРћ РћР”РќРђ РќРђРЎРўР РћР™РљРђ РР— Р’РЎР•РҐ РњРћР–Р•Рў Р‘Р«РўР¬ Р’Р«Р‘Р РђРќРђ
-	//onlyOneSett false РњРћР–РќРћ Р’Р«Р‘Р РђРўР¬ Р’РЎР• РќРђРЎРўР РћР™РљР Р РђР—РћРњ
+	//круговое вертикальное меню
+	//reDrawMenu отчищает экран
+	//ИМЕЕТ ДВА РЕЖИМА
+	//onlyOneSett true ТОЛЬКО ОДНА НАСТРОЙКА ИЗ ВСЕХ МОЖЕТ БЫТЬ ВЫБРАНА
+	//onlyOneSett false МОЖНО ВЫБРАТЬ ВСЕ НАСТРОЙКИ РАЗОМ
 	setlocale (LC_ALL,"Rus");
 	showCursor(false);
 	COORD pos;
 	redrawMenu();
-	///
 
-	/*
-	//СѓР·РЅР°РµРј РјР°РєСЃРёРјР°Р»СЊРЅСѓСЋ РґР»РёРЅСѓ РїСѓРЅРєС‚Р° РјРµРЅСЋ
-	//С‡С‚РѕР± РІС‹РґРµР»РµРЅРµРё Р±С‹Р»Рѕ РѕРґРёРЅР°РєРѕРІС‹Рј
+    //узнаем максимальную длину пункта меню
 	int maxSymb=0;
 	for (int i=0; i < countButt; i++){
 		if (butt[i].length() > maxSymb)
 			maxSymb = butt[i].length();
 	}
-    */
+    drawFrame(maxSymb+3, countButt);
+	///
 
 	CN;
-	//РѕС‚СЂРёСЃРѕРІС‹РІР°РµРј РїРµСЂРІРѕРЅРѕС‡Р°Р»СЊРЅРѕРµ РјРµРЅСЋ
+	//отрисовываем первоночальное меню
 	cout << endl;
 	char symbPoint;
 	for (int i=0; i < countButt; i++, cout << "\n"){
@@ -202,7 +197,7 @@ int drawSettingsMenu(string butt[], int countButt, bool* settPoint, int selecPoi
 				cout << "[" << symbPoint << "]" << butt[i] << ">";
 			else
 				cout << butt[i] << ">";
-			//Р·Р°РїРѕР»РЅСЏРµРј РїСѓСЃС‚С‹РјРё СЃРёРјРІРѕР»Р°РјРё РґР»СЏ РѕРґРёРЅР°РєРѕРІРѕРіРѕ РІС‹РґРµР»РµРЅРёСЏ
+			//заполняем пустыми символами для одинакового выделения
 			//for (int j = butt[i].length(); j < maxSymb; j++, cout << " ");
 			CN;
 		}
@@ -212,11 +207,13 @@ int drawSettingsMenu(string butt[], int countButt, bool* settPoint, int selecPoi
 			if (i != countButt-1)
 				cout << "[" << symbPoint << "]" << butt[i] << " ";
 			else
-			cout << " " << butt[i] << " ";
+			cout << butt[i] << " ";
 		}
 	}
-	//РѕР¶РёРґР°РµРј РєРЅРѕРїРєСѓ РїРµСЂРµСЂРёСЃРѕРІС‹РІР°РµРј РјРµРЅСЋ Рё Р¶РґРµРј РєРЅ РІС‹С…РѕРґР°
+
+	//ожидаем кнопку перерисовываем меню и ждем кн выхода
 	for (int key = getKeys(); key != BUTT_ENTER || selecPoint != countButt-1; key = getKeys()){
+       if (key == BUTT_ESC) return -1;
 		if (key == BUTT_UP && selecPoint >= 0){
 			if (selecPoint == 0)
 				selecPoint = countButt-1;
@@ -229,10 +226,10 @@ int drawSettingsMenu(string butt[], int countButt, bool* settPoint, int selecPoi
 			else
 				selecPoint++;
 		}
-		//РµСЃР»Рё РІС‹Р±СЂР°РЅРЅС‹С… РїСѓРЅРєС‚РѕРІ РјРѕР¶РµС‚ Р±С‹С‚СЊ РјРЅРѕРіРѕ
+		//если выбранных пунктов может быть много
 		if (key == BUTT_ENTER && onlyOneSett == false)
 			settPoint[selecPoint] = (settPoint[selecPoint]) ? (false) : (true);
-		//РµСЃР»Рё РІС‹Р±СЂР°РЅРЅС‹Р№ РїСѓРЅРєС‚ РјРѕР¶РµС‚ Р±С‹С‚СЊ С‚РѕР»СЊРєРѕ РѕРґРёРЅ
+		//если выбранный пункт может быть только один
 		else if (key == BUTT_ENTER && onlyOneSett == true){
 			for (int i=0; i < countButt; i++)
 				settPoint[i] = false;
@@ -243,7 +240,7 @@ int drawSettingsMenu(string butt[], int countButt, bool* settPoint, int selecPoi
 		pos.Y -= countButt;
 		setNewCursorCOORD(pos);
 
-		//РїРµСЂРµСЂРёСЃРѕРІС‹РІР°РµРј РјРµРЅСЋ
+		//перерисовываем меню
 		for (int i=0; i < countButt; i++, cout << "\n"){
 			if (i == selecPoint){
 				HG;
@@ -254,8 +251,8 @@ int drawSettingsMenu(string butt[], int countButt, bool* settPoint, int selecPoi
 					//for (int j = butt[i].length(); j < maxSymb; j++, cout << " ");
 				}
 				else{
-					cout << butt[i];
-					//Р·Р°РїРѕР»РЅСЏРµРј РїСѓСЃС‚С‹РјРё СЃРёРјРІРѕР»Р°РјРё РґР»СЏ РѕРґРёРЅР°РєРѕРІРѕРіРѕ РІС‹РґРµР»РµРЅРёСЏ
+					cout << butt[i] << ">";
+					//заполняем пустыми символами для одинакового выделения
 					//for (int j = butt[i].length(); j < maxSymb+3; j++, cout << " ");
 				}
 				CN;
@@ -268,12 +265,13 @@ int drawSettingsMenu(string butt[], int countButt, bool* settPoint, int selecPoi
 					//for (int j = butt[i].length(); j < maxSymb; j++, cout << " ");
 					}
 				else{
-					cout << butt[i];
+					cout << butt[i] << " ";
 					//for (int j = butt[i].length(); j < maxSymb+3; j++, cout << " ");
 				}
 			}
 		}
 	}
+
 
     /////
 	showCursor(true);
@@ -283,36 +281,26 @@ int drawSettingsMenu(string butt[], int countButt, bool* settPoint, int selecPoi
 
 
 int drawInputMenu(string butt[],int countButt, int selecPoint=0){
-	//Р·Р°С†РёРєР»РµРЅРЅРѕРµ РІРµСЂС‚РёРєР°Р»СЊРЅРѕРµ РјРµРЅСЋ
+	//зацикленное вертикальное меню
 	setlocale (LC_ALL,"Rus");
 	showCursor(false);
 	COORD pos;
 	redrawMenu();
 
-    /*
-	//СѓР·РЅР°РµРј РјР°РєСЃРёРјР°Р»СЊРЅСѓСЋ РґР»РёРЅСѓ РїСѓРЅРєС‚Р° РјРµРЅСЋ
-	//С‡С‚РѕР± РІС‹РґРµР»РµРЅРµРё Р±С‹Р»Рѕ РѕРґРёРЅР°РєРѕРІС‹Рј
-	int maxSymb=0;
-	for (int i=0; i < countButt; i++){
-		if (butt[i].length() > maxSymb)
-			maxSymb = butt[i].length();
-	}
-    */
-
 	CN;
-	//РѕС‚СЂРёСЃРѕРІС‹РІР°РµРј РїРµСЂРІРѕРЅРѕС‡Р°Р»СЊРЅРѕРµ РјРµРЅСЋ
+	//отрисовываем первоночальное меню
 	cout << endl;
 	for (int i=0; i < countButt; i++, cout << "\n"){
 		if (i == selecPoint){
 			HG; cout << "\t<" << butt[i] << " "; CN;
-			//Р·Р°РїРѕР»РЅСЏРµРј РїСѓСЃС‚С‹РјРё СЃРёРјРІРѕР»Р°РјРё РґР»СЏ РѕРґРёРЅР°РєРѕРІРѕРіРѕ РІС‹РґРµР»РµРЅРёСЏ
+			//заполняем пустыми символами для одинакового выделения
 			//for (int j = butt[i].length(); j < maxSymb; j++, cout << " ");
 		}
 		else {
 			cout << "\t " << butt[i] << " ";
 		}
 	}
-	//РѕР¶РёРґР°РµРј РєРЅРѕРїРєСѓ РїРµСЂРµСЂРёСЃРѕРІС‹РІР°РµРј РјРµРЅСЋ Рё Р¶РґРµРј РєРЅ РІС‹С…РѕРґР°
+	//ожидаем кнопку перерисовываем меню и ждем кн выхода
 	for (int key = getKeys(); key != BUTT_ENTER; key = getKeys()){
 		if (key == BUTT_UP && selecPoint >= 0){
 			if (selecPoint == 0)
@@ -331,7 +319,7 @@ int drawInputMenu(string butt[],int countButt, int selecPoint=0){
 		pos.Y -= countButt;
 		setNewCursorCOORD(pos);
 
-		//РїРµСЂРµСЂРёСЃРѕРІС‹РІР°РµРј РјРµРЅСЋ
+		//перерисовываем меню
 		for (int i=0; i < countButt; i++, cout << "\n"){
 			if (i == selecPoint){
 				HG; cout << "\t<" << butt[i] << ">"; CN;
@@ -352,10 +340,10 @@ int drawInputMenu(string butt[],int countButt, int selecPoint=0){
 }
 
 double drawInputTable(string lable, string MessageOfError, bool error = false){
-//Р РЎРќРћР’Рђ РћР§Р•Р Р•Р”РќРђРЇ РџР•Р Р•Р“Р РЈР—РљРђ Р¤РЈРќРљР¦РР Р”Р›РЇ Р’Р’РћР”Рђ Р•Р“Рћ
+//И СНОВА ОЧЕРЕДНАЯ ПЕРЕГРУЗКА ФУНКЦИИ ДЛЯ ВВОДА ЕГО
 
 	/*
-	* РЈР‘Р РђРўР¬ Р”Р•Р™РЎРўР’РРЇ РР— POS.Y POS.X Р РћРЎРўРђР’РРўР¬ Р¦Р•Р›РћР§РРЎР›Р•РќРќР«Р• Р—РќРђР§Р•РќРРЇ
+	* УБРАТЬ ДЕЙСТВИЯ ИЗ POS.Y POS.X И ОСТАВИТЬ ЦЕЛОЧИСЛЕННЫЕ ЗНАЧЕНИЯ
 	*
 	*/
 
@@ -366,23 +354,23 @@ double drawInputTable(string lable, string MessageOfError, bool error = false){
 	double tmp;
 	COORD pos;
 
-	//Р»РµР№Р±Р» РІРІРѕРґРёРјРѕР№ РїРµСЂРµРјРµРЅРЅРѕР№
+	//лейбл вводимой переменной
 	setColor(White);
 	cout << "\n\t" << lable << "\n";
 
-	//С‚Р°Р±Р»РёС‡РєР° РґР»СЏ РІРІРѕРґР° РїРµСЂРµРјРµРЅРЅРѕР№
+	//табличка для ввода переменной
 	short countLine = 1, countRow = 1;
 	short sizeRow[] = {20};
 	drawBasicTable(countLine, countRow, sizeRow);
 
-	//С‚РёРї РІРІРѕРґРёРјРѕР№ РїРµСЂРµРјРµРЅРЅРѕР№
+	//тип вводимой переменной
 	string lableType;
 	lableType = {" double "};
 	pos = {31, 3};
 	setNewCursorCOORD(pos);
 	cout << lableType;
 
-	//РІС‹РІРѕРґРёРј СЃРѕРѕР±С‰РµРЅРёРµ РѕР± РѕС€РёР±РєРµ РµСЃР»Рё РёРјРµР»Рѕ РјРµСЃС‚Рѕ Р±С‹С‚СЊ
+	//выводим сообщение об ошибке если имело место быть
 	if (error){
 		pos = {9, 5};
 		setNewCursorCOORD(pos);
@@ -390,7 +378,7 @@ double drawInputTable(string lable, string MessageOfError, bool error = false){
 		cout << MessageOfError;
 	}
 
-	//РІРѕР·РІСЂР°С‰Р°РµРј РєСѓСЂСЃРѕСЂ РІ С‚Р°Р±Р»РёС‡РєСѓ
+	//возвращаем курсор в табличку
 	setColor(Red);
 	pos = {9,3};
 	setNewCursorCOORD(pos);
@@ -409,30 +397,30 @@ double drawInputTable(string lable, string MessageOfError, bool error = false){
 }
 
 int drawInputTable_int(string lable, string MessageOfError, bool error = false){
-//Р РЎРќРћР’Рђ РћР§Р•Р Р•Р”РќРђРЇ РџР•Р Р•Р“Р РЈР—РљРђ Р¤РЈРќРљР¦РР Р”Р›РЇ Р’Р’РћР”Рђ Р•Р“Рћ
+//И СНОВА ОЧЕРЕДНАЯ ПЕРЕГРУЗКА ФУНКЦИИ ДЛЯ ВВОДА ЕГО
 	setlocale (LC_ALL,"Rus");
 	showCursor(false);
 	redrawMenu();
 	double tmp;
 	COORD pos;
 
-	//Р»РµР№Р±Р» РІРІРѕРґРёРјРѕР№ РїРµСЂРµРјРµРЅРЅРѕР№
+	//лейбл вводимой переменной
 	setColor(White);
 	cout << "\n\t" << lable << "\n";
 
-	//С‚Р°Р±Р»РёС‡РєР° РґР»СЏ РІРІРѕРґР° РїРµСЂРµРјРµРЅРЅРѕР№
+	//табличка для ввода переменной
 	short countLine = 1, countRow = 1;
 	short sizeRow[] = {20};
 	drawBasicTable(countLine, countRow, sizeRow);
 
-	//С‚РёРї РІРІРѕРґРёРјРѕР№ РїРµСЂРµРјРµРЅРЅРѕР№
+	//тип вводимой переменной
 	string lableType;
 	lableType = {" int "};
 	pos = {31, 3};
 	setNewCursorCOORD(pos);
 	cout << lableType;
 
-	//РІС‹РІРѕРґРёРј СЃРѕРѕР±С‰РµРЅРёРµ РѕР± РѕС€РёР±РєРµ РµСЃР»Рё РёРјРµР»Рѕ РјРµСЃС‚Рѕ Р±С‹С‚СЊ
+	//выводим сообщение об ошибке если имело место быть
 	if (error){
 		pos = {9, 5};
 		setNewCursorCOORD(pos);
@@ -440,7 +428,7 @@ int drawInputTable_int(string lable, string MessageOfError, bool error = false){
 		cout << MessageOfError;
 	}
 
-	//РІРѕР·РІСЂР°С‰Р°РµРј РєСѓСЂСЃРѕСЂ РІ С‚Р°Р±Р»РёС‡РєСѓ
+	//возвращаем курсор в табличку
 	setColor(Red);
 	pos = {9,3};
 	setNewCursorCOORD(pos);
@@ -462,12 +450,45 @@ void redrawMenu(){
 	//showCursor(false);
 	COORD pos = {0,0};
 	setNewCursorCOORD(pos);
-	for (int i=0; i<40; i++, cout << "                                                                     \n");
+	//for (int i=0; i<40; i++, cout << "                                                                     \n");
+	//for (int i=0; i<CNT_LINES_REDRAW; i++, cout << "-----------------------------------------------------------------------\n");
+	for (int i=0; i<CNT_LINES_REDRAW; i++, cout << "\t\t\t\t\r\n");
 	pos.X = 0; pos.Y = 0;
 	setNewCursorCOORD(pos);
 }
 
-void redrawLine(COORD pos){
-	setNewCursorCOORD(pos);
-	cout << "\t\t\t\t\r";
+
+void exitMenu(){
+    //setNewCursorCOORD(pos);
+    ///
+    int cntButt = 2;
+    string butt[cntButt];
+    butt[0] = {"    Yes    "};
+    butt[1] = {"    No   "};
+    drawButton(butt, cntButt);
+
 }
+
+
+#define FOR(UPPERBOUND,VALUE) for(int I = 0; I<int(UPPERBOUND); I++, cout << char(VALUE))
+void drawFrame(int length, int height){
+	//узнаем максимальную длину пункта меню
+	COORD pos;
+	returnCursorCOORD(pos);
+    /*
+	218 + 196 - 194 + 196 - 191 +
+	179 ¦		179 ¦		179 ¦
+	195 + 196 - 197 + 196 - 180 +
+	179 ¦		179 ¦		179 ¦
+	192 + 196 - 193 + 196 - 217 +
+	*/
+	//32 ' '
+	//10 '\n'
+    setlocale (LC_ALL,"C");
+    FOR(7,32); FOR(1,218); FOR(length+2,196); FOR(1,191);
+    FOR(height+1, 10);
+    FOR(7,32); FOR(1,192); FOR(length+2,196); FOR(1,217);
+    setlocale (LC_ALL,"Rus");
+    setNewCursorCOORD(pos);
+}
+

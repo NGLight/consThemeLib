@@ -25,7 +25,8 @@ int drawMenu(string butt[], int countButt, int selecPoint = 0); //рисуем обычное
 int drawSettingsMenu(string butt[], int countButt, bool* settPointint, int selecPoint, bool onlyOneSett); //рисуем меню с выбором настроек
 int drawInputInt(string menuPoint, int selectPoint);
 //------------------- СЛУЖЕБНЫЕ -------------------//
-void redrawMenu(); //функция быстрой "перерисовки" экана, на самом деле область замещается пробелами, однако это работает быстрее system(cls)
+void redrawMenu(); //функция быстрой "перерисовки" экана, на самом деле область замещается пробелами, однако это работает НА МНОГО быстрее system(cls)
+void redrawLine();
 void drawFrame(int length, int height);
 //void drawEscButton(){}
 
@@ -116,12 +117,9 @@ int drawMenu(string butt[], int countButt, int selecPoint){
 	    cout << "\t";
 		if (i == selecPoint){
 			HG; cout << "<" << butt[i] << ">"; CN;
-            //for (int j = butt[i].length(); j < maxSymb; j++, cout << " ");
 		}
 		else {
 			cout << " " << butt[i] << " ";
-			//for (int j = butt[i].length(); j < maxSymb; j++, cout << " ");
-			//cout << " ";
 		}
 	}
 	//ожидаем кнопку перерисовываем меню и ждем кн выхода
@@ -151,12 +149,9 @@ int drawMenu(string butt[], int countButt, int selecPoint){
             cout << "\t";
 			if (i == selecPoint){
 				HG; cout << "<" << butt[i] << ">"; CN;
-				//for (int j = butt[i].length(); j < maxSymb; j++, cout << " ");
-				//cout << ">"; CN;
 			}
 			else {
 				cout << " " << butt[i] << " ";
-				//for (int j = butt[i].length(); j < maxSymb; j++, cout << " ");
 			}
 		}
 	}
@@ -283,10 +278,17 @@ int drawInputMenu(string butt[], string value[], int countButt, int selecPoint=0
 	cout << endl;
 	for (int i=0; i < countButt; i++, cout << "\n"){
 		if (i == selecPoint){
-			HG; cout << "\t<" << butt[i] << ":\t" << value[i] << ">"; CN;
+			HG; cout << "\t<" << butt[i];
+			if (value[i].length())
+                cout << ":     " << value[i];
+            cout << ">";
+            CN;
 		}
 		else {
-			cout << "\t " << butt[i]  << ":\t" << value[i] <<  " ";
+			cout << "\t " << butt[i];
+            if (value[i].length())
+                cout << ":     " << value[i];
+            cout << " ";
 		}
 	}
 	//ожидаем кнопку перерисовываем меню и ждем кн выхода
@@ -312,10 +314,17 @@ int drawInputMenu(string butt[], string value[], int countButt, int selecPoint=0
 		//перерисовываем меню
 		for (int i=0; i < countButt; i++, cout << "\n"){
 			if (i == selecPoint){
-				HG; cout << "\t<" << butt[i] << ":\t" << value[i] << ">"; CN;
+				HG; cout << "\t<" << butt[i];
+                if (value[i].length())
+                cout << ":     " << value[i];
+            cout << ">";
+            CN;
 			}
 			else {
-				cout << "\t " << butt[i] << ":\t" << value[i] << " ";
+				cout << "\t " << butt[i];
+                if (value[i].length())
+                cout << ":     " << value[i];
+            cout << " ";
 			}
 		}
 	}
@@ -332,64 +341,29 @@ int drawInputInt(string menuPoint, int selectPoint){
 	//спускаемся на высоту выбранного пункта меню
 	COORD pos;
 	pos.Y = 1 + selectPoint;
-	pos.X = 8 + menuPoint.length() + 3;
+	//pos.X = 8 + menuPoint.length() + 7;
 	setNewCursorCOORD(pos);
-
+	redrawLine();
+    cout << "\t"; BR; cout << menuPoint; RD; cout << ": ";
 	showCursor(true);
-	BR;
 	cin >> a;
 	showCursor(false);
+	CN;
     return a;
-    /*
-	//лейбл вводимой переменной
-	setColor(White);
-	cout << "\n\t" << lable << "\n";
-
-	//табличка для ввода переменной
-	short countLine = 1, countRow = 1;
-	short sizeRow[] = {20};
-	drawBasicTable(countLine, countRow, sizeRow);
-
-	//тип вводимой переменной
-	string lableType;
-	lableType = {" int "};
-	pos = {31, 3};
-	setNewCursorCOORD(pos);
-	cout << lableType;
-
-	//выводим сообщение об ошибке если имело место быть
-	if (error){
-		pos = {9, 5};
-		setNewCursorCOORD(pos);
-		setColor(Red);
-		cout << MessageOfError;
-	}
-
-	//возвращаем курсор в табличку
-	setColor(Red);
-	pos = {9,3};
-	setNewCursorCOORD(pos);
-	showCursor(true);
-	setColor(Red);
-	cin >> tmp;
-
-	if (cin.bad() || cin.fail()){
-		cin.clear();
-		exit(-1);
-	}
-
-	showCursor(true);
-	setColor(Red);
-	return tmp;
-	*/
 }
 
 void redrawMenu(){
-	//showCursor(false);
 	COORD pos = {0,0};
 	setNewCursorCOORD(pos);
 	for (int i=0; i<CNT_LINES_REDRAW; i++, cout << "\t\t\t\t\t\r\n");
 	pos.X = 0; pos.Y = 0;
+	setNewCursorCOORD(pos);
+}
+
+void redrawLine(){
+	COORD pos;
+	returnCursorCOORD(pos);
+	cout << "\t\t\t\t\t\r";
 	setNewCursorCOORD(pos);
 }
 
@@ -405,10 +379,10 @@ void exitMenu(){
 
 }
 
-
-//функция отрисовывает вокруг меню прямоугольник, не более того
+//ленивая заднциа
 #define FOR(UPPERBOUND,VALUE) for(int I = 0; I<int(UPPERBOUND); I++, cout << char(VALUE))
 void drawFrame(int length, int height){
+//функция отрисовывает вокруг меню прямоугольник, не более того
 	COORD pos;
 	returnCursorCOORD(pos);
     /*

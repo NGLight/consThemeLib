@@ -7,7 +7,7 @@
 #define YL setColor(Yellow, Black)
 #define WT setColor(White, Black)           //цвет подсвеченного пункта меню
 #define HG setColor(LightRed, Black)        //цвет подсвеченного пункта меню
-#define BR setColor(Yellow, Black)        //инвертированный цвет пункта меню
+#define BR setColor(Black, LightRed)        //инвертированный цвет пункта меню
 
 
 ///////////////////////// ЦВЕТА /////////////////////////

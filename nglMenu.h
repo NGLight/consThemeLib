@@ -349,14 +349,15 @@ int drawInputInt(string menuPoint, int selectPoint, int curValue){
 	//pos.X = 8 + menuPoint.length() + 7;
 	setNewCursorCOORD(pos);
 	redrawLine();
-    cout << "\t"; BR; cout << menuPoint << ":"; RD; cout << " ";
+	RD;
+    cout << "\t" << menuPoint << ": ";
 	showCursor(true);
 	returnCursorCOORD(pos);
+	cout << curValue;
 
-	short key;
-	int i;
-	int tmp;
-	for (tmp=0, i=1, key = getKeys(); key != BUTT_ENTER; i++, key = getKeys()){
+	int i = 1;
+	int tmp = curValue;
+	for (short key = getKeys(); key != BUTT_ENTER; i++, key = getKeys()){
         if (key == BUTT_ESC) return curValue;
 
         if (key > 47 && key < 58){

@@ -238,9 +238,10 @@ int drawSettingsMenu(string butt[], int countButt, bool* settPoint, int selecPoi
 		//перерисовываем меню
 		for (int i=0; i < countButt; i++, cout << "\n"){
 			if (i == selecPoint){
+                HG;
 				symbPoint = (settPoint[i]) ? (31) : (32);
 				if (i != countButt-1){
-					HG; cout << "\t<" << "[" << symbPoint << "]" << butt[i] << ">";
+					 cout << "\t<" << "[" << symbPoint << "]" << butt[i] << ">";
 				}
 				else{
 					cout << "\t<" << butt[i] << ">";

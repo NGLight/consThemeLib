@@ -337,20 +337,44 @@ int drawInputMenu(string butt[], string value[], int countButt, int selecPoint=0
 	return selecPoint;
 }
 
-int drawInputInt(string menuPoint, int selectPoint){
+int drawInputInt(string menuPoint, int selectPoint, int curValue){
 	int a;
 	//спускаемся на высоту выбранного пункта меню
-	COORD pos;
+	COORD pos, posEnter;
 	pos.Y = 1 + selectPoint;
 	//pos.X = 8 + menuPoint.length() + 7;
 	setNewCursorCOORD(pos);
 	redrawLine();
     cout << "\t"; BR; cout << menuPoint; RD; cout << ": ";
 	showCursor(true);
-	cin >> a;
+
+
+    returnCursorCOORD(posEnter);
+	short key;
+	int i;
+	int tmp;
+	for (tmp=0, i=1, key = getKeys(); key != BUTT_ENTER; key = getKeys(), i *= 10){
+        if (key > 47 || key < 58){
+            cout << (key-48);
+            tmp += (key-48) * i;
+        }
+
+        if (key == BUTT_BACKSPACE && i > 10){
+            i/=10;
+            posEnter.X--;
+            setNewCursorCOORD(posEnter);
+            cout << " ";
+            setNewCursorCOORD(posEnter);
+        }
+
+	}
+
+
+
+
 	showCursor(false);
 	CN;
-    return a;
+    return tmp;
 }
 
 void redrawMenu(){

@@ -338,6 +338,10 @@ int drawInputMenu(string butt[], string value[], int countButt, int selecPoint=0
 }
 
 int drawInputInt(string menuPoint, int selectPoint, int curValue){
+    /*
+    * ДОБАВИТЬ ОГРАНИЧЕНИЯ ПО КОЛИЧЕСТВУ ЦИФР
+    * БАГ С МИНУСОМ
+    */
 	int a;
 	//спускаемся на высоту выбранного пункта меню
 	COORD pos, posEnter;
@@ -345,27 +349,38 @@ int drawInputInt(string menuPoint, int selectPoint, int curValue){
 	//pos.X = 8 + menuPoint.length() + 7;
 	setNewCursorCOORD(pos);
 	redrawLine();
-    cout << "\t"; BR; cout << menuPoint; RD; cout << ": ";
+    cout << "\t"; BR; cout << menuPoint << ":"; RD; cout << " ";
 	showCursor(true);
+	returnCursorCOORD(pos);
 
-
-    returnCursorCOORD(posEnter);
 	short key;
 	int i;
 	int tmp;
-	for (tmp=0, i=1, key = getKeys(); key != BUTT_ENTER; key = getKeys(), i *= 10){
-        if (key > 47 || key < 58){
+	for (tmp=0, i=1, key = getKeys(); key != BUTT_ENTER; i++, key = getKeys()){
+        if (key == BUTT_ESC) return curValue;
+
+        if (key > 47 && key < 58){
             cout << (key-48);
-            tmp += (key-48) * i;
+            tmp *= 10;
+            tmp += (key-48);
         }
 
-        if (key == BUTT_BACKSPACE && i > 10){
-            i/=10;
-            posEnter.X--;
-            setNewCursorCOORD(posEnter);
-            cout << " ";
-            setNewCursorCOORD(posEnter);
+        if (key == '-') {
+            tmp *= -1;
+            cout << "\t\t\t\t\t";
+            setNewCursorCOORD(pos);
         }
+
+        if (key == BUTT_BACKSPACE && i >= 1){
+            tmp /= 10;
+            i--;
+            cout << "\t\t\t\t\t";
+            setNewCursorCOORD(pos);
+        }
+        //обнуляем строку
+        cout << "\t\t\t\t\t\r";
+        setNewCursorCOORD(pos);
+        cout << tmp;
 
 	}
 
@@ -427,3 +442,7 @@ void drawFrame(int length, int height){
     setNewCursorCOORD(pos);
 }
 
+void drawMessageBox(){
+    //функция вывода текстового сообщения в меню
+    //выводит и стирает за собой текстовые сообщения
+}

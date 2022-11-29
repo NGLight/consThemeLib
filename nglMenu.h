@@ -4,6 +4,7 @@
 #include "nglExp.h"
 
 #define CNT_LINES_REDRAW 10 //количество строк для отчистки для быстрого обновления экрана
+#define FOR(UPPERBOUND,VALUE) for(int I = 0; I<int(UPPERBOUND); I++, cout << char(VALUE)) //ленивая заднциа
 
 /*
 * ПОДТВЕРЖДЕНИЕ ВЫХОДА
@@ -340,7 +341,7 @@ int drawInputMenu(string butt[], string value[], int countButt, int selecPoint=0
 int drawInputInt(string menuPoint, int selectPoint, int curValue){
     /*
     * ДОБАВИТЬ ОГРАНИЧЕНИЯ ПО КОЛИЧЕСТВУ ЦИФР
-    * БАГ С МИНУСОМ
+    * маленький баг с вводом двух нулей подряд
     */
 	int a;
 	//спускаемся на высоту выбранного пункта меню
@@ -357,6 +358,11 @@ int drawInputInt(string menuPoint, int selectPoint, int curValue){
 
 	int i = 1;
 	int tmp = curValue;
+
+	int minus = curValue+1;  //нарекаю сей костыль ГИППЕРКОСТЫЛЕМ
+	//а в чем же его суть? спросит меня незадачливый читатель...
+	//А ВСЕ ДЕЛО В АТТЦЦКОМ МИНУС НУЛЕ!!!!
+
 	for (short key = getKeys(); key != BUTT_ENTER; i++, key = getKeys()){
         if (key == BUTT_ESC) return curValue;
 
@@ -367,22 +373,88 @@ int drawInputInt(string menuPoint, int selectPoint, int curValue){
         }
 
         if (key == '-') {
+            minus *= -1;
             tmp *= -1;
-            cout << "\t\t\t\t\t";
+            cout << "\t\t\t\t\t\r";
             setNewCursorCOORD(pos);
         }
 
         if (key == BUTT_BACKSPACE && i >= 1){
             tmp /= 10;
             i--;
-            cout << "\t\t\t\t\t";
+            cout << "\t\t\t\t\t\r";
             setNewCursorCOORD(pos);
         }
         //обнуляем строку
         cout << "\t\t\t\t\t\r";
         setNewCursorCOORD(pos);
-        cout << tmp;
+        if (minus < 0) cout << "-";
+        cout << abs(tmp);
+	}
 
+
+
+
+	showCursor(false);
+	CN;
+    return tmp;
+}
+
+
+double drawInputDouble(string menuPoint, int selectPoint, double curValue){
+    //для подробных комментариев см функцию drawInputInt
+    /*
+    * ПРИДУМАТЬ СПОСОБ ВВОДА ТОЧКИ
+    * ДОБАВИТЬ ОГРАНИЧЕНИЯ ПО КОЛИЧЕСТВУ ЦИФР
+    * маленький баг с вводом двух нулей подряд
+    */
+	double b;
+	COORD pos, posEnter;
+	pos.Y = 1 + selectPoint;
+	setNewCursorCOORD(pos);
+	redrawLine();
+	RD;
+    cout << "\t" << menuPoint << ": ";
+	showCursor(true);
+	returnCursorCOORD(pos);
+	cout << curValue;
+
+	int i = 1;
+	int tmp = curValue;
+
+	int minus = curValue+1;  //см функцию drawInputInt
+
+	for (short key = getKeys(); key != BUTT_ENTER; i++, key = getKeys()){
+        if (key == BUTT_ESC) return curValue;
+
+        if (key > 47 && key < 58){
+            cout << (key-48);
+            tmp *= 10;
+            tmp += (key-48);
+        }
+
+        if (key == '-') {
+            minus *= -1;
+            tmp *= -1;
+            //redrawLine();
+            cout << "\t\t\t\t\t\r";
+            setNewCursorCOORD(pos);
+        }
+
+        if (key == BUTT_BACKSPACE && i >= 1){
+            tmp /= 10;
+            i--;
+            //redrawLine();
+            cout << "\t\t\t\t\t\r";
+            setNewCursorCOORD(pos);
+        }
+        //обнуляем строку
+        //redrawLine();
+        //setNewCursorCOORD(pos);
+        cout << "\t\t\t\t\t\r";
+        setNewCursorCOORD(pos);
+        if (minus < 0) cout << "-";
+        cout << abs(tmp);
 	}
 
 
@@ -404,7 +476,9 @@ void redrawMenu(){
 void redrawLine(){
 	COORD pos;
 	returnCursorCOORD(pos);
-	cout << "\t\t\t\t\t\r";
+	//FOR(20,32);
+	for (int i=0; i < 3; i++) cout << "          ";
+	//cout << "\t\t\t\t\t\r";
 	setNewCursorCOORD(pos);
 }
 
@@ -420,8 +494,6 @@ void exitMenu(){
 
 }
 
-//ленивая заднциа
-#define FOR(UPPERBOUND,VALUE) for(int I = 0; I<int(UPPERBOUND); I++, cout << char(VALUE))
 void drawFrame(int length, int height){
 //функция отрисовывает вокруг меню прямоугольник, не более того
 	COORD pos;
